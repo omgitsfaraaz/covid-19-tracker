@@ -3,15 +3,23 @@ import { MenuItem, FormControl, Select, Card, CardContent } from "@material-ui/c
 import InfoBox from './InfoBox';
 import Map from './Map'
 import './App.css';
+import Table from './Table';
 
 function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
+  const [tableData, setTableData] = useState([]);
 
-  //STATE = How to write a variable in react
+  useEffect(() => {
+    fetch('https://disease.sh/v3/covid-19/all')
+      .then(response =>response.json())
+      .then(data => {
+      setCountryInfo(data);
+      });
+  }, [])
 
-  // https://disease.sh/v3/covid-19/countries
+  
   useEffect(() => {
     const getCountriesData = async () => {
       await fetch ("https://disease.sh/v3/covid-19/countries")
@@ -22,6 +30,7 @@ function App() {
           value: country.countryInfo.iso2
         }));
 
+        setTableData(data);
         setCountries(countries);
       });
     };
@@ -33,7 +42,7 @@ function App() {
     const countryCode = event.target.value;
     
 
-    const url = countryCode == 'worldwide' 
+    const url = countryCode === 'worldwide' 
       ? 'https://disease.sh/v3/covid-19/all' 
       :`https://disease.sh/v3/covid-19/countries/${countryCode}`;
 
@@ -42,8 +51,10 @@ function App() {
     .then(data => {
       setCountry(countryCode);
       setCountryInfo(data);
-    })
+    });
   };
+
+  console.log('COUNTRY INFO>>>', countryInfo);
 
   return (
     <div className="app">
@@ -68,11 +79,11 @@ function App() {
         </div>
 
         <div className="app__stats">
-          <InfoBox title="Coronavirus cases" cases={123} total={2000} />
+          <InfoBox title="Coronavirus cases" cases={countryInfo.todayCases} total={countryInfo.cases} />
 
-          <InfoBox title="Recovered" cases={1234} total={3000} />
+          <InfoBox title="Recovered" cases={countryInfo.todayRecovered} total={countryInfo.recovered} />
 
-          <InfoBox title="Deaths" cases={12345} total={4000} />
+          <InfoBox title="Deaths" cases={countryInfo.todayDeaths} total={countryInfo.deaths} />
         </div>
       
 
@@ -84,7 +95,7 @@ function App() {
       <Card className="app__right">
         <CardContent>
           <h3>Live cases by country</h3>
-          {/* Table */}
+          <Table countries={tableData} />
           <h3>Worldwide new cases</h3>
           {/* Graph */}
         </CardContent>
