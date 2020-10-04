@@ -3,7 +3,7 @@
 }
 
 body {
-  background-color: #f5f6fa;
+  background-color: #303952;
 }
 
 .app {
@@ -51,6 +51,13 @@ body {
 .app__graph {
   flex-grow: 1;
 }
+
+.app__graphTitle {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+
 
 @media (max-width: 990px) {
   .app {
